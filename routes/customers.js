@@ -1,5 +1,8 @@
 const errors = require('restify-errors');
+const rjwt = require('restify-jwt-community');
 const Customer = require('../models/Customer');
+const config = require('../config');
+
 
 module.exports = server => {
 
@@ -34,7 +37,7 @@ module.exports = server => {
 
 
 
-    server.post('/customers' , async (req , res , next) => {
+    server.post('/customers' , rjwt({secret:config.JWT_SECRET})  ,   async (req , res , next) => {
    if(!req.is('application/json')){
        return next(new errors.InvalidContentError("Exept application/json"));
    }
@@ -56,7 +59,7 @@ module.exports = server => {
 
 // update user
 
-server.put('/customers/:id' , async (req , res , next) => {
+server.put('/customers/:id' , rjwt({secret:config.JWT_SECRET}) , async (req , res , next) => {
     if(!req.is('application/json')){
         return next(new errors.InvalidContentError("Exept application/json"));
     }
@@ -77,7 +80,7 @@ server.put('/customers/:id' , async (req , res , next) => {
 
 
      //delete 
-     server.del('/customers/:id' , async (req , res , next) => {
+     server.del('/customers/:id' , rjwt({secret:config.JWT_SECRET}) ,  async (req , res , next) => {
 
         try {
             const customer  = await Customer.findOneAndRemove({_id: req.params.id});
